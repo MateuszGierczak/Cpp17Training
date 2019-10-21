@@ -5,6 +5,12 @@
 
 void function() {}
 
+template<typename T, std::size_t N>
+constexpr std::size_t array_size(const T(&)[N])
+{
+   return N;
+}
+
 TEST_CASE("auto")
 {
     auto x = 27;
@@ -20,11 +26,13 @@ TEST_CASE("auto")
         auto&& uref1 = x;
         auto&& uref2 = const_x;
         auto&& uref3 = 27;
+        auto&& uref4 = std::move(uref3);
 
         //reference collapsing
         REQUIRE(std::is_same<decltype(uref1), int&>::value); //auto&& &
         REQUIRE(std::is_same<decltype(uref2), const int&>::value); //const auto&& &
         REQUIRE(std::is_same<decltype(uref3), int&&>::value); //auto&&
+        REQUIRE(std::is_same<decltype(uref4), int&&>::value); //auto&& && -> auto&&
     }
 
     SECTION("auto with c-style array")
@@ -34,6 +42,7 @@ TEST_CASE("auto")
         auto arr1 = arr;
         auto& arr2 = arr;
 
+        static_assert(array_size(arr) == 4, "");
         REQUIRE(std::is_same<decltype(arr1), const int*>::value);
         REQUIRE(std::is_same<decltype(arr2), const int(&)[4]>::value);
     }
