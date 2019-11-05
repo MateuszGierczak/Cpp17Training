@@ -165,11 +165,12 @@ TEST_CASE("Class template argument deduction")
         std::cout << type_id_with_cvr<decltype(copy_range2)>().pretty_name() << "\n";
     }
 
-    SECTION("with std::map")
+    SECTION("with std::map - no CTAD in nested types")
     {
         using namespace std::string_literals;
 
         // std::map m1{ { "THX"s, 1011 }, { "THZ"s, 1012 } }; - it doesn't work :(
+        // std::vector<std::pair> v1{ { "THX"s, 1011 }, { "THZ"s, 1012 } };
         std::map<std::string, int> m2{ { "THX"s, 1011 }, { "THZ"s, 1012 } };
     }
 }
