@@ -142,7 +142,7 @@ TEST_CASE("Class template argument deduction")
         // std::tuple<std::string> t1{ "THX", 1011, 10.5 }; - ERROR: partially specified class
         // template argument
 
-        auto t2 = std::make_tuple<std::string>("THX", 1011, 10.5);
+        auto t2 = std::make_tuple<std::string>("THX", 1011, 10.5); // for make_tuple it is possible
     }
 
     SECTION("with std::vector")
@@ -157,9 +157,12 @@ TEST_CASE("Class template argument deduction")
         // std::vector v4(3); - class template argument deduction dosnt work here
 
         std::vector range{ 1, 2, 3, 4, 5, 10 };
-        std::vector copy_range(std::begin(range), std::end(range)); // but how it works ?
+        std::vector copy_range1(std::begin(range), std::end(range)); // but how it works ?
+        std::vector copy_range2{ std::begin(range), std::end(range) };
 
-        std::cout << type_id_with_cvr<decltype(copy_range)>().pretty_name() << "\n";
+        REQUIRE(range == copy_range1);
+        std::cout << type_id_with_cvr<decltype(copy_range1)>().pretty_name() << "\n";
+        std::cout << type_id_with_cvr<decltype(copy_range2)>().pretty_name() << "\n";
     }
 
     SECTION("with std::map")
