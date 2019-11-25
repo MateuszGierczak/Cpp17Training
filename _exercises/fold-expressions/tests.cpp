@@ -56,10 +56,37 @@ std::size_t hash_tuple(const std::tuple<Ts...>& t)
     return hash_tuple_impl(t, std::index_sequence_for<Ts...>{});
 }
 
-TEST_CASE("hash - write a function that calculate hash for tuple")
+TEST_CASE("hash_combine - write a function that calculate hash for tuple")
 {
     Person p{ "Mariusz", "Kowalski", 25 };
 
     REQUIRE(hash_tuple(p.tie()) == 3834454928984662410);
     REQUIRE(hash_tuple(std::make_tuple(10.4, 5, "THX"s)) == 11840747206787424437);
+}
+
+template<unsigned ID, unsigned... IDs>
+constexpr bool has_id(unsigned id)
+{
+    return ((id == ID) || ... || (id == IDs));
+}
+
+TEST_CASE("has_is - write a function that checks if ID is in parameter pack")
+{
+    REQUIRE(has_id<100, 200, 300>(100));
+    REQUIRE_FALSE(has_id<100, 200, 300>(400));
+    REQUIRE(has_id<100>(100));
+}
+
+template<typename Container, typename Arg, typename... Args>
+std::size_t matches(const Container& c, Arg arg, Args... args)
+{
+    return (std::count(std::begin(c), std::end(c), arg) + ... + std::count(std::begin(c), std::end(c), args));
+}
+
+TEST_CASE("matches - write a function that calculates number of elements equal to arguments")
+{
+    std::vector<int> v {1, 2, 3, 4, 5};
+
+    REQUIRE(matches(v, 2, 3) == 2);
+    REQUIRE(matches(v, 6, 7, 8) == 0);
 }
