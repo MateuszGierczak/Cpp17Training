@@ -51,6 +51,7 @@ TEST_CASE("Template argument deduction")
         value_arg_function(ref_x); // T = int, referencensess is also ignored
         value_arg_function(const_ref_x); // T = int, constness and referencness is ignored
         value_arg_function(arr); // T = int*, c-style array is pointer to first element
+        //value_arg_function({1, 2, 3}); //template type deduction can not deduce initialize_list
     }
 
     SECTION("function argument as ref")
@@ -75,18 +76,41 @@ TEST_CASE("Template argument deduction")
     }
 }
 
+TEST_CASE("CTAD - from c++92 to c++17")
+{
+    // In cpp98
+    std::pair<std::string, int> p1{ "THX", 1011 };
+
+    // In cpp11
+    auto p2 = std::make_pair("THX", 1011);
+    REQUIRE(std::is_same_v<decltype(p2), std::pair<const char*, int>>);
+
+    // In cpp14
+    using namespace std::string_literals;
+
+    auto p3 = std::make_pair("THX"s, 1011);
+
+    // In cpp17 - it's what we want do achive !
+    std::pair p4{ "THX"s, 1011 };
+    REQUIRE(std::is_same_v<decltype(p4), std::pair<std::string, int>>);
+}
+
 namespace training
 {
     template <typename T, typename U>
     struct pair
     {
-        T first_{};
-        U second_{};
+        T first{};
+        U second{};
 
-        pair(const T& first, const T& second) : first_{ first }, second_{ second }
+        pair(const T& _first, const U& _second)
+            : first(_first),
+              second(_second)
         {}
 
-        pair(T&& first, U&& second) : first_{ std::move(first) }, second_{ std::move(second) }
+        pair(T&& _first, U&& _second)
+            : first(std::move(_first)),
+              second(std::move(_second))
         {}
     };
 }
@@ -94,6 +118,10 @@ namespace training
 TEST_CASE("Class template argument deduction - how it works")
 {
     using namespace std::string_literals;
+
+    const auto prefix {"THX"s};
+    const auto serial_number {2020};
+    training::pair p2 {prefix, serial_number};
 
     training::pair p1{ "THX"s, 694 };
     REQUIRE(std::is_same_v<decltype(p1), training::pair<std::string, int>>);
@@ -107,22 +135,14 @@ TEST_CASE("Class template argument deduction - how it works")
     // 5. Instanstiate it
 }
 
+void foo(int) {}
+
 TEST_CASE("Class template argument deduction")
 {
     SECTION("with std::pair")
     {
-        // In cpp98
-        std::pair<std::string, int> p1{ "THX", 1011 };
-
-        // In cpp11
-        auto p2 = std::make_pair("THX", 1011); // p2 = std::pair<const char*, int>
-
-        // In cpp14
         using namespace std::string_literals;
 
-        auto p3 = std::make_pair("THX"s, 1011);
-
-        // In cpp17
         std::pair p4{ "THX"s, 1011 };
         REQUIRE(std::is_same_v<decltype(p4), std::pair<std::string, int>>);
     }
@@ -135,6 +155,12 @@ TEST_CASE("Class template argument deduction")
         std::tuple t2{ "THX"s, 1011, 10.5 };
 
         REQUIRE(std::is_same_v<decltype(t1), decltype(t2)>);
+    }
+
+    SECTION("with std::function")
+    {
+        std::function<void(int)> f1 = &foo;
+        std::function f2 = &foo;
     }
 
     SECTION("class vs template type deduction - rule all or nothing")
@@ -157,7 +183,7 @@ TEST_CASE("Class template argument deduction")
         // std::vector v4(3); - class template argument deduction dosnt work here
 
         std::vector range{ 1, 2, 3, 4, 5, 10 };
-        std::vector copy_range1(std::begin(range), std::end(range)); // but how it works ?
+        std::vector copy_range1(std::begin(range), std::end(range)); // but how it works ? - go to deduction guide
         std::vector copy_range2{ std::begin(range), std::end(range) };
 
         REQUIRE(range == copy_range1);
@@ -208,4 +234,44 @@ TEST_CASE("Deduction guide")
         std::vector v2{ std::begin(range), std::end(range) };
         REQUIRE_FALSE(std::is_same_v<decltype(v2), std::vector<int>>);
     }
+}
+
+template<typename T>
+struct type_identity
+{
+    using type = T;
+};
+
+template<typename T>
+using type_identity_t = typename type_identity<T>::type;
+
+template<typename T>
+struct smart_ptr
+{
+    smart_ptr(T* _ptr)
+        : ptr(_ptr) {}
+
+    //Technique #1
+    //smart_ptr(type_identity_t<T>* _ptr)
+    //    :ptr(_ptr) {}
+
+    //Technique #2
+//    using pointer = T*;
+//    using pointer = std::add_pointer<T>::type;
+
+//    smart_ptr(pointer _ptr)
+//        : ptr(_ptr) {}
+
+    //Technique #3
+//    template<typename U>
+//    smart_ptr(U* _ptr)
+//        : ptr(_ptr) {}
+
+private:
+    T* ptr {};
+};
+
+TEST_CASE("CTAD - how to disabled it")
+{
+    smart_ptr ptr(new int[10]);
 }
