@@ -11,16 +11,12 @@ cmake_minimum_required(VERSION 3.13)
 
 project(${PROJECT_NAME_STR})
 
-find_package(Boost REQUIRED)
+find_package(Catch2 CONFIG REQUIRED)
 
-file(GLOB HEADER_FILES_LIST "*.h" "*.hpp")
-file(GLOB SOURCE_FILES_LIST "*.cpp")
+add_executable(${PROJECT_NAME} tests.cpp)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES_LIST}
-                               ${HEADER_FILES_LIST})
-
-target_link_libraries(${PROJECT_NAME} Boost::boost)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
+target_link_libraries(${PROJECT_NAME} Catch2::Catch2 Catch2::Catch2WithMain)
 
 enable_testing()
 add_test(tests ${PROJECT_NAME})

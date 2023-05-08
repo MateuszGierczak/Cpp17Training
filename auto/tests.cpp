@@ -1,8 +1,6 @@
 #include "catch.hpp"
 #include "range_printer.hpp"
 
-#include <iostream>
-
 struct Class
 {
     void const_function() const {}
