@@ -1,26 +1,12 @@
-if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-  set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-      CACHE STRING "")
-endif()
-
-message(STATUS "Vcpkg integration script found : " ${CMAKE_TOOLCHAIN_FILE})
-
 get_filename_component(PROJECT_NAME_STR ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+project(${PROJECT_NAME_STR}_exc)
 
-cmake_minimum_required(VERSION 3.13)
+find_package(Catch2 CONFIG REQUIRED)
 
-project(${PROJECT_NAME_STR})
+add_executable(${PROJECT_NAME} tests.cpp)
 
-find_package(Boost REQUIRED)
-
-file(GLOB HEADER_FILES_LIST "*.h" "*.hpp")
-file(GLOB SOURCE_FILES_LIST "*.cpp")
-
-add_executable(${PROJECT_NAME} ${SOURCE_FILES_LIST}
-                               ${HEADER_FILES_LIST})
-
-target_link_libraries(${PROJECT_NAME} Boost::boost)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
+target_link_libraries(${PROJECT_NAME} PRIVATE Catch2::Catch2 Catch2::Catch2WithMain)
 
 enable_testing()
 add_test(tests ${PROJECT_NAME})
