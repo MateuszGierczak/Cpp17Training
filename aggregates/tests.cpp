@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "range_printer.hpp"
+#include "utils/RangePrinter.hpp"
 
 #include <iostream>
 #include <string>
@@ -12,17 +12,17 @@ TEST_CASE("aggregates")
         int arr1[]{1, 2, 3};
         std::array<int, 3> arr2{1, 2, 3};
 
-        std::cout << "c-style array = " << utils::print_range(arr1) << "\n";
-        std::cout << "std::array = " << utils::print_range(arr2) << "\n";
+        std::cout << "c-style array = " << utils::printRange(arr1) << "\n";
+        std::cout << "std::array = " << utils::printRange(arr2) << "\n";
     }
 
     SECTION("brace elision")
     {
         std::array<int, 3> arr1; // WHAT VALUES IS THAT array initialized ?
-        std::cout << "arr1 = " << utils::print_range(arr1) << '\n';
+        std::cout << "arr1 = " << utils::printRange(arr1) << '\n';
 
         std::array<int, 3> arr2{{1, 2, 3}};
-        std::cout << "arr2 = " << utils::print_range(arr2) << '\n';
+        std::cout << "arr2 = " << utils::printRange(arr2) << '\n';
 
         struct stretch
         {

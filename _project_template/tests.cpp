@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "range_printer.hpp"
+#include "utils/RangePrinter.hpp"
 
 TEST_CASE("Test")
 {

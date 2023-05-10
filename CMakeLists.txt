@@ -13,6 +13,7 @@ project(${PROJECT_NAME_STR} CXX)
 
 add_subdirectory(_project_template)
 add_subdirectory(_exercises)
+add_subdirectory(_utils)
 add_subdirectory(aggregates)
 add_subdirectory(auto)
 add_subdirectory(class-template-arg-deduction)

@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "range_printer.hpp"
+#include "utils/RangePrinter.hpp"
 
 #include <boost/type_index.hpp>
 
@@ -174,10 +174,10 @@ TEST_CASE("Class template argument deduction")
     SECTION("with std::vector")
     {
         std::vector<int> v1{ 3 };
-        std::cout << "v1 = " << utils::print_range(v1) << "\n";
+        std::cout << "v1 = " << utils::printRange(v1) << "\n";
 
         std::vector<int> v2(3);
-        std::cout << "v2 = " << utils::print_range(v2) << "\n";
+        std::cout << "v2 = " << utils::printRange(v2) << "\n";
 
         std::vector v3{ 3 };
         // std::vector v4(3); - class template argument deduction dosnt work here
