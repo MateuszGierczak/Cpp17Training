@@ -1,0 +1,5 @@
+add_subdirectory(aggregates)
+add_subdirectory(auto)
+add_subdirectory(class-template-arg-deduction)
+add_subdirectory(fold-expressions)
+add_subdirectory(structure-binding)

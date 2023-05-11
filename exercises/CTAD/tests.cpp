@@ -1,5 +1,4 @@
 #include "catch.hpp"
-#include "range_printer.hpp"
 
 #include <iostream>
 
@@ -18,5 +17,5 @@ TEST_CASE("Write deduction guide for array type")
     array a1{10, 20, 30, 40};
     REQUIRE(std::size(a1.data) == 4);
 
-    array a2 {10.0, 30}; // it should not compile
+    //array a2 {10.0, 30}; // it should not compile
 }
