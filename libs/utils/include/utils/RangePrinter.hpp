@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ostream>
+#include "traits/IsIterable.hpp"
 
 namespace utils
 {
@@ -8,7 +9,7 @@ template<typename Iterator>
 struct RangePrinter
 {
     RangePrinter(Iterator begin, Iterator end, const char* delimiter)
-        : begin_{begin}, end_{end}, delimiter_{delimiter}
+        : begin_{std::move(begin)}, end_{std::move(end)}, delimiter_{delimiter}
     {}
 
     friend std::ostream& operator<<(std::ostream& stream, const RangePrinter& printer)
@@ -47,5 +48,16 @@ template<typename Key, typename Value>
 inline std::ostream& operator<<(std::ostream& os, const std::pair<Key, Value>& obj)
 {
     return os << '{' << obj.first << ", " << obj.second << '}';
+}
+
+inline std::ostream& operator<<(std::ostream& os, const std::string& str)
+{
+    return os << str;
+}
+
+template<typename T, typename = std::enable_if_t<traits::is_iterable<T>>>
+inline std::ostream& operator<<(std::ostream& os, const T& value)
+{
+    return os << printRange(value);
 }
 }
