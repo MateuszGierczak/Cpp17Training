@@ -5,6 +5,18 @@
 
 namespace utils
 {
+template<typename T>
+struct ValuePrinter
+{
+    const T& value;
+};
+
+template<typename T>
+inline auto makeValuePrinter(const T& value)
+{
+    return ValuePrinter<T>{value};
+}
+
 template<typename Iterator>
 struct RangePrinter
 {
@@ -16,16 +28,16 @@ struct RangePrinter
     {
         auto begin = printer.begin_;
 
-        stream << "[";
+        stream << '[';
         if(begin != printer.end_)
         {
-            stream << *begin;
+            stream << makeValuePrinter(*begin);
             while(++begin != printer.end_)
             {
-                stream << printer.delimiter_ << *begin;
+                stream << printer.delimiter_ << makeValuePrinter(*begin);
             }
         }
-        return stream << "]";
+        return stream << ']';
     }
 private:
     Iterator begin_, end_;
@@ -39,19 +51,25 @@ inline auto printRange(const Range& range, const char* delimiter = ", ")
 }
 
 template<typename Key, typename Value>
-inline std::ostream& operator<<(std::ostream& os, const std::pair<Key, Value>& obj)
+inline std::ostream& operator<<(std::ostream& os, const ValuePrinter<std::pair<Key, Value>>& obj)
 {
-    return os << '{' << obj.first << ", " << obj.second << '}';
+    return os << '{' << makeValuePrinter(obj.value.first) << ", " << makeValuePrinter(obj.value.second) << '}';
 }
 
-inline std::ostream& operator<<(std::ostream& os, const std::string& str)
+inline std::ostream& operator<<(std::ostream& os, const ValuePrinter<std::string>& obj)
 {
-    return os << str;
+    return os << obj.value;
 }
 
-template<typename T, typename = std::enable_if_t<traits::is_iterable<T>>>
-inline std::ostream& operator<<(std::ostream& os, const T& value)
+template<typename T, typename std::enable_if_t<traits::is_iterable<T>, int> = 0>
+inline std::ostream& operator<<(std::ostream& os, const ValuePrinter<T>& obj)
 {
-    return os << printRange(value);
+    return os << printRange(obj.value);
+}
+
+template<typename T, typename std::enable_if_t<not traits::is_iterable<T>, int> = 0>
+inline std::ostream& operator<<(std::ostream& os, const ValuePrinter<T>& obj)
+{
+    return os << obj.value;
 }
 }

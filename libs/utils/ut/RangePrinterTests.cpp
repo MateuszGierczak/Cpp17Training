@@ -22,10 +22,8 @@ TEST(RangePrinterTests, shouldPrintVector)
     std::vector<char> vec_char{'a', 'b', 'c'};
     EXPECT_EQ(toString(vec_char), "[a, b, c]");
     
-    //For some reason with GCC 11 this fragment couses segmentation fault, with GCC 12 this problem
-    //not occure
-    //std::vector<std::string> vec_str{"Simple", "Test", "Case"};
-    //EXPECT_EQ(toString(vec_str), "[Simple, Test, Case]");
+    std::vector<std::string> vec_str{"Simple", "Test", "Case"};
+    EXPECT_EQ(toString(vec_str), "[Simple, Test, Case]");
 }
 
 TEST(RangePrinterTests, shouldPrintInnerContainer)
@@ -33,13 +31,11 @@ TEST(RangePrinterTests, shouldPrintInnerContainer)
     std::vector<std::set<int>> vec_with_set {{1, 2, 3}, {4, 5, 6}};
     EXPECT_EQ(toString(vec_with_set), "[[1, 2, 3], [4, 5, 6]]");
 
-    //For some reason with GCC 11 this fragment couses segmentation fault, with GCC 12 this problem
-    //not occure
-    //std::vector<std::vector<std::string>> vec_with_str_vec {{"Test", "Suite"}};
-    //EXPECT_EQ(toString(vec_with_str_vec), "[[Test, Suite]]");
+    std::vector<std::vector<std::string>> vec_with_str_vec {{"Test", "Suite"}};
+    EXPECT_EQ(toString(vec_with_str_vec), "[[Test, Suite]]");
 
-    //std::map<int, std::vector<std::string>> map_with_vec{{1, {"Test", "Suite"}}};
-    //EXPECT_EQ(toString(map_with_vec), "[{1, [Test, Suite]}]");
+    std::map<int, std::vector<std::string>> map_with_vec{{1, {"Test", "Suite"}}};
+    EXPECT_EQ(toString(map_with_vec), "[{1, [Test, Suite]}]");
 }
 
 TEST(RangePrinterTests, shouldPrintMap)
