@@ -38,12 +38,6 @@ inline auto printRange(const Range& range, const char* delimiter = ", ")
     return RangePrinter{std::begin(range), std::end(range), delimiter};
 }
 
-template<typename Iterator>
-inline std::ostream& operator<<(std::ostream& os, const RangePrinter<Iterator>& printer)
-{
-    return os << printer;
-}
-
 template<typename Key, typename Value>
 inline std::ostream& operator<<(std::ostream& os, const std::pair<Key, Value>& obj)
 {
